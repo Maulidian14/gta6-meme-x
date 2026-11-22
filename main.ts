@@ -15,7 +15,15 @@ if (typeof post !== "object" || post === null || Array.isArray(post)) {
 }
 const url = post.url;
 if (typeof url !== "string" || !url.startsWith("https://")) {
-  throw new Error("POST.json url must be an https URL");
+  throw new Error(
+    `POST.json url must be an https URL to an X post (got ${JSON.stringify(url)}); expected shape: {"url": "https://x.com/<handle>/status/<id>"}`,
+  );
+}
+const host = new URL(url).hostname.replace(/^www\./, "");
+if (host !== "x.com" && host !== "twitter.com") {
+  throw new Error(
+    `POST.json url must point to x.com or twitter.com (got host "${host}"); expected shape: {"url": "https://x.com/<handle>/status/<id>"}`,
+  );
 }
 
 mkdirSync(outDir, { recursive: true });
